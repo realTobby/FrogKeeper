@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/KordesiiLogo/Scenes/StartupLogo.unity
+    guid: c85773f2b9f543e42a60fc6f934d7755
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/ResultScreen.unity
+    guid: f5168070fdabf2541ba5a5984c518235
+  m_configObjects: {}
