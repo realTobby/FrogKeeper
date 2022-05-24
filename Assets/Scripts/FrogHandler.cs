@@ -8,6 +8,7 @@ public class FrogHandler : MonoBehaviour
 
     public Vector3 lastMousePos;
 
+    public GameObject tounge;
 
     public bool isRotating = false;
 
@@ -35,6 +36,7 @@ public class FrogHandler : MonoBehaviour
             yield return null;
         }
         froggy.transform.rotation = Quaternion.Euler(0f, endRotation, 0f);
+        
         isRotating = false;
     }
 
@@ -59,16 +61,20 @@ public class FrogHandler : MonoBehaviour
 
             //if(mousePos.x )
 
-            if (mousePos.x < lastMousePos.x)
+            if(froggy.GetComponent<FrogBehaviour>().isDoingSometing == false)
             {
-                // flip to left
-                StartCoroutine(LerpToRotation(180, 0.2f, 0f));
-
-            }
-            if (mousePos.x > lastMousePos.x)
-            {
-                // flip to right
-                StartCoroutine(LerpToRotation(0, 0.2f, 0f));
+                if (mousePos.x < lastMousePos.x)
+                {
+                    // flip to left
+                    StartCoroutine(LerpToRotation(180, 0.2f, 0f));
+                    //tounge.GetComponent<SpriteRenderer>().flipX = true;
+                }
+                if (mousePos.x > lastMousePos.x)
+                {
+                    // flip to right
+                    StartCoroutine(LerpToRotation(0, 0.2f, 0f));
+                    //tounge.GetComponent<SpriteRenderer>().flipX = false;
+                }
             }
 
             lastMousePos = mousePos;

@@ -23,7 +23,7 @@ public class FlyBehaviour : MonoBehaviour
         {
             DirectionVector = Random.insideUnitCircle.normalized;
             DirectionVector.z = 0;
-
+            Speed = Random.Range(0.5f, 2.5f);
             yield return new WaitForSeconds(Random.Range(10, 20));
 
         }
@@ -43,6 +43,9 @@ public class FlyBehaviour : MonoBehaviour
     private void Awake()
     {
         froggyKing = GameObject.FindGameObjectWithTag("FroggyKing");
+
+        Speed = Random.Range(0.5f, 2.5f);
+
     }
 
     // Start is called before the first frame update
@@ -90,14 +93,10 @@ public class FlyBehaviour : MonoBehaviour
                 DirectionVector.y *= -1;
             }
 
-
-
-
         }
         else
         {
-            // calc direction to froggy 
-            DirectionVector = (froggyKing.transform.position - this.transform.position).normalized;
+            Destroy(this.gameObject);
         }
 
         // move towards target direction
@@ -112,15 +111,9 @@ public class FlyBehaviour : MonoBehaviour
     {
         if(collision.transform.CompareTag("froggySpecial"))
         {
-            if(GotCaught == false)
-            {
-                IsDeadlyForFroggy = false;
-                GotCaught = true;
-
-                             
-                Speed = Speed * 9f;
-            }
-            
+            GotCaught = true;
+            froggyKing.GetComponent<FrogBehaviour>().ToungeTouch();
+            Destroy(this.gameObject);
         }
     }
 

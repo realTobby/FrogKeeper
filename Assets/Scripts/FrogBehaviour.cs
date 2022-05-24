@@ -18,9 +18,11 @@ public class FrogBehaviour : MonoBehaviour
 
     public bool CanUseSpecial = false;
 
-    public BoxCollider2D abilityHitbox;
+    public GameObject toungeAbility;
 
     public ScoreHandler scores;
+
+    public GameObject indicator;
 
     private void Start()
     {
@@ -35,46 +37,53 @@ public class FrogBehaviour : MonoBehaviour
     IEnumerator AbilityCooldown()
     {
         UI_ELEMENT_INFO_SPECIAL.SetActive(false);
-        yield return new WaitForSeconds(50);
+        indicator.SetActive(false);
+        yield return new WaitForSeconds(6);
         UI_ELEMENT_INFO_SPECIAL.SetActive(true);
+        indicator.SetActive(true);
         CanUseSpecial = true;
     }
 
+    IEnumerator SingleCroak()
+    {
+
+        isDoingSometing = true;
+        frogAnimator.Play("frogCroak");
+
+        croaking.clip = croaks[Random.Range(0, croaks.Length)];
+        croaking.pitch = Random.Range(0, 3);
+        croaking.Play();
+
+        yield return new WaitForSeconds(0.2f);
+        isDoingSometing = false;
+
+
+    }
 
     IEnumerator Croak()
     {
-        while(true)
+        while (true)
         {
-            yield return new WaitForSeconds(Random.Range(2, 10));
-
-            if(isDoingSometing == false)
+            yield return new WaitForSeconds(Random.Range(2, 5));
+            if (isDoingSometing == false)
             {
-                isDoingSometing = true;
-                frogAnimator.Play("frogCroak");
-
-                croaking.clip = croaks[Random.Range(0, croaks.Length)];
-                croaking.Play();
-
-                yield return new WaitForSeconds(0.2f);
-                isDoingSometing = false;
-
+                StartCoroutine(SingleCroak());
             }
         }
     }
 
     IEnumerator Blink()
     {
-        while(true)
+        while (true)
         {
-            yield return new WaitForSeconds(Random.Range(1, 9));
-            if(isDoingSometing == false)
+            yield return new WaitForSeconds(Random.Range(3, 10));
+            if (isDoingSometing == false)
             {
                 isDoingSometing = true;
                 frogAnimator.Play("frogBlinking");
                 yield return new WaitForSeconds(0.2f);
                 isDoingSometing = false;
             }
-            
         }
     }
 
@@ -83,20 +92,38 @@ public class FrogBehaviour : MonoBehaviour
         isDoingSometing = true;
         CanUseSpecial = false;
 
-        abilityHitbox.enabled = true;
+
 
         // play animation
         frogAnimator.Play("frogOpenMouth");
 
-        yield return new WaitForSeconds(0.5f);
-        abilityHitbox.enabled = false;
+        yield return new WaitForSeconds(.2f);
 
-        yield return new WaitForSeconds(1.5f);
 
-        
+
+        //toungeAbility.transform.LookAt(indicator.transform);
+
+        //abilityHitbox.enabled = true;
+        toungeAbility.SetActive(true);
+
+        //Debug.Log(toungeAbility.transform.rotation.z);
+
+        Vector3 moveDirection = indicator.transform.position - toungeAbility.transform.position;
+        if (moveDirection != Vector3.zero)
+        {
+            float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+            toungeAbility.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+
+        //Debug.Log(toungeAbility.transform.rotation.z);
+
+        yield return new WaitForSeconds(.5f);
+
+        //toungeAbility.enabled = false;
+        toungeAbility.SetActive(false);
 
         // stop animation
-        frogAnimator.Play("frogBlinking");
+        frogAnimator.Play("frogIdle");
 
         isDoingSometing = false;
 
@@ -106,37 +133,33 @@ public class FrogBehaviour : MonoBehaviour
 
     private void Update()
     {
-        if(CanUseSpecial == true)
+        if (CanUseSpecial == true)
         {
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButton(1))
             {
                 StartCoroutine(UseAbility());
                 StartCoroutine(AbilityCooldown());
             }
         }
-        
+
+    }
+
+    public void ToungeTouch()
+    {
+        scores.AteAFly();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.transform.CompareTag("fly"))
+        if (collision.transform.CompareTag("fly"))
         {
-            var animatorinfo = this.frogAnimator.GetCurrentAnimatorClipInfo(0);
-            if(animatorinfo[0].clip.name == "frogOpenMouth")
-            {
-                Destroy(collision.gameObject);
-                scores.AteAFly();
-            }
-
-            else if (collision.transform.GetComponent<FlyBehaviour>().IsDeadlyForFroggy == true)
+            if (collision.transform.GetComponent<FlyBehaviour>().IsDeadlyForFroggy == true)
             {
                 scores.SaveLastScore();
-
                 SceneManager.LoadScene(2);
             }
-
         }
     }
-
-
 }
+
+
